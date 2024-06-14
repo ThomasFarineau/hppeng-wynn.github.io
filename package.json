@@ -1,0 +1,23 @@
+{
+  "name": "hppeng-wynn",
+  "version": "1.0.0",
+  "description": "Wynncraft class building calculator & general utility site",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "solid-devtools": "^0.29.2",
+    "vite": "^5.2.10",
+    "vite-plugin-solid": "^2.8.2"
+  },
+  "dependencies": {
+    "@solidjs/router": "^0.13.5",
+    "sass": "^1.75.0",
+    "solid-js": "^1.8.17"
+  }
+}
