@@ -1,0 +1,22 @@
+@use './assets/variables' as v
+@import "assets/reset"
+
+*
+  box-sizing: border-box
+
+body
+  background: url('./assets/images/background.webp')
+  margin: 0
+  min-height: 100vh
+  font-family: v.$font_family
+
+#root
+  display: grid
+  grid-template-columns: 4.5rem 3fr
+  height: 100vh
+  grid-gap: v.$global_padding
+  padding: v.$global_padding
+  transition: v.$transition
+
+  &:has(nav.open)
+    grid-template-columns: 12rem 1fr

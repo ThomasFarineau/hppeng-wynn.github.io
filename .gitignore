@@ -1,8 +1,0 @@
-*.swp
-*.bat
-*.json
-sets/
-
-.idea/
-*.iml
-.editor_log.txt

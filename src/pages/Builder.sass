@@ -1,0 +1,9 @@
+@use '../assets/variables' as v
+@use "sass:math" as math
+
+.skills
+    display: grid
+    grid-template-columns: repeat(5, 1fr)
+    justify-content: center
+    margin-top: 20px
+    gap: math.div(v.$global_padding, 2)
