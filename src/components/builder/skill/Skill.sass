@@ -1,16 +1,15 @@
 @use '../../../assets/variables' as v
-@use "sass:math" as math
 
-.card
-  background: rgba(0, 0, 0, 0.5)
-  backdrop-filter: blur(1rem)
-  border-radius: math.div(v.$global_padding, 2)
+.skill
+  @extend .card
   height: 100%
-  padding: math.div(v.$global_padding, 2)
   position: relative
   z-index: 1
   overflow: hidden
-  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px 0
+  border: solid rgba(0, 0, 0, 0) v.$global_padding_div_4
+
+  &.error
+    border-color: rgb(162, 17, 17)
 
   .icon
     position: absolute
@@ -25,7 +24,7 @@
     filter: blur(0.25rem)
 
   h2
-    font-size: 1.25rem
+    font-size: 1.1rem
     padding: 0
     font-weight: bold
     margin: 0 0 0.5rem
@@ -34,13 +33,13 @@
   input
     background: rgba(0, 0, 0, 0.5)
     border: 0
-    border-radius: math.div(v.$global_padding, 4)
+    border-radius: v.$global_padding_div_4
     color: white
     font-size: 1rem
-    padding: math.div(v.$global_padding, 2)
+    padding: v.$global_padding_div_2
     width: 100%
     transition: v.$transition
-    margin: 0 0 math.div(v.$global_padding, 4) 0
+    margin: 0 0 v.$global_padding_div_4 0
 
     &:focus
       background: rgba(255, 255, 255, 0.1)

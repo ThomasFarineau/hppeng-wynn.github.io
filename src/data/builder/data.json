@@ -1,0 +1,30 @@
+{
+  "maxLevel": 106,
+  "maxLevelSkillPoint": 100,
+  "skills": [
+    {
+      "icon": "✤",
+      "title": "Strength",
+      "color": "#00AA00"
+    },
+    {
+      "icon": "✦",
+      "title": "Dexterity",
+      "color": "#FFFF55"
+    },{
+      "icon": "❉",
+      "title": "Intelligence",
+      "color": "#55FFFF"
+    },
+    {
+      "icon": "✹",
+      "title": "Defense",
+      "color": "#FF5555"
+    },
+    {
+      "icon": "❋",
+      "title": "Agility",
+      "color": "#FFFFFF"
+    }
+  ]
+}

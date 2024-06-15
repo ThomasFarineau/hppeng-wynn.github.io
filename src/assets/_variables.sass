@@ -1,5 +1,21 @@
+@use "sass:math" as math
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap')
 
 $font_family: 'Noto Sans', sans-serif
 $global_padding: 1rem
 $transition: all ease 0.25s
+
+$global_padding_div_2: math.div($global_padding, 2)
+$global_padding_div_4: math.div($global_padding, 4)
+
+$danger: rgb(162, 17, 17)
+$success: rgb(17, 162, 17)
+$warning: rgb(162, 162, 17)
+
+.card
+  background: rgba(0, 0, 0, 0.5)
+  backdrop-filter: blur(1rem)
+  border-radius: $global_padding_div_2
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px 0
+  color: white
+  padding: $global_padding_div_2

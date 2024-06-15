@@ -1,13 +1,12 @@
 @use '../../assets/variables' as v
-@use "sass:math" as math
 
 nav
   background: rgba(0, 0, 0, 0.5)
   backdrop-filter: blur(1rem)
-  border-radius: math.div(v.$global_padding, 2)
+  border-radius: v.$global_padding_div_2
   user-select: none
   height: 100%
-  padding: math.div(v.$global_padding, 2)
+  padding: v.$global_padding_div_2
   overflow: hidden
 
   &.open
@@ -24,10 +23,10 @@ nav
     height: 100%
 
     li
-      padding: math.div(v.$global_padding, 2)
+      padding: v.$global_padding_div_2
       text-align: center
       cursor: pointer
-      border-radius: math.div(v.$global_padding, 4)
+      border-radius: v.$global_padding_div_4
       background: transparent
       transition: v.$transition
 
