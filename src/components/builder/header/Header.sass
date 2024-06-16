@@ -1,0 +1,103 @@
+@use 'sass:color'
+@use '../../../assets/variables' as v
+
+header
+  @extend .card
+  grid-area: header
+
+  h1
+    text-align: center
+    font-size: 1.5rem
+    margin-bottom: v.$global_padding_div_2
+    line-height: 1.5
+
+  h2
+    text-align: center
+    font-size: 1.25rem
+    display: grid
+    grid-template-columns: repeat(4, 1fr)
+    justify-content: space-around
+    gap: v.$global_padding_div_2
+    align-items: center
+    @media (max-width: 1100px)
+      grid-template-columns: repeat(2, 1fr)
+    @media (max-width: 740px)
+      grid-template-columns: 1fr
+
+    span
+      flex: 1
+      text-align: center
+      display: flex
+      justify-content: center
+      gap: v.$global_padding_div_2
+      align-items: flex-end
+
+      small
+        font-size: 75%
+        font-weight: normal
+
+      .success
+        color: v.$success
+        font-weight: bold
+
+      .warning
+        color: v.$warning
+        font-weight: bold
+
+      .error
+        color: v.$danger
+        font-weight: bold
+
+    button
+      background: rgba(0, 0, 0, 0.5)
+      border: 0
+      border-radius: v.$global_padding_div_4
+      color: white
+      font-size: 1.1rem
+      transition: v.$transition
+      width: 100%
+      padding: v.$global_padding_div_2
+      cursor: pointer
+      display: flex
+      align-content: center
+      align-items: center
+      justify-content: center
+      gap: v.$global_padding_div_2
+
+      box-icon
+        fill: white
+        width: 1.25rem
+
+      &.share
+        background: v.$primary
+
+        &:hover
+          background: darken(v.$primary, 5%)
+
+      &.reset
+        background: v.$danger
+
+        &:hover
+          background: darken(v.$danger, 5%)
+
+      &:hover
+        background: rgba(255, 255, 255, 0.1)
+
+    label
+      display: flex
+      align-items: center
+      gap: v.$global_padding_div_2
+
+      input
+        background: rgba(0, 0, 0, 0.5)
+        border: 0
+        border-radius: v.$global_padding_div_4
+        padding: v.$global_padding_div_2
+        color: white
+        font-size: 1.25rem
+        width: 100%
+        transition: v.$transition
+
+        &:focus
+          background: rgba(255, 255, 255, 0.1)
+          outline: none

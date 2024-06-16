@@ -1,30 +1,103 @@
 {
   "maxLevel": 106,
   "maxLevelSkillPoint": 100,
+  "maxPowderSlots": 6,
   "skills": [
     {
       "icon": "✤",
       "title": "Strength",
-      "color": "#00AA00"
+      "color": "#00AA00",
+      "id": "strength"
     },
     {
       "icon": "✦",
       "title": "Dexterity",
-      "color": "#FFFF55"
-    },{
+      "color": "#FFFF55",
+      "id": "dexterity"
+    },
+    {
       "icon": "❉",
       "title": "Intelligence",
-      "color": "#55FFFF"
+      "color": "#55FFFF",
+      "id": "intelligence"
     },
     {
       "icon": "✹",
       "title": "Defense",
-      "color": "#FF5555"
+      "color": "#FF5555",
+      "id": "defence"
     },
     {
       "icon": "❋",
       "title": "Agility",
-      "color": "#FFFFFF"
+      "color": "#FFFFFF",
+      "id": "agility"
     }
-  ]
+  ],
+  "equipments": {
+    "armour": [
+      {
+        "type": "helmet"
+      },
+      {
+        "type": "chestplate"
+      },
+      {
+        "type": "leggings"
+      },
+      {
+        "type": "boots"
+      }
+    ],
+    "accessories": [
+      {
+        "type": "ring",
+        "index": 1
+      },
+      {
+        "type": "ring",
+        "index": 2
+      },
+      {
+        "type": "bracelet"
+      },
+      {
+        "type": "necklace"
+      }
+    ],
+    "weapon": [
+      {
+        "type": "weapon"
+      }
+    ]
+  },
+  "types": {
+    "armour": [
+      "helmet",
+      "chestplate",
+      "leggings",
+      "boots"
+    ],
+    "accessory": [
+      "ring",
+      "bracelet",
+      "necklace"
+    ],
+    "weapon": [
+      "wand",
+      "spear",
+      "bow",
+      "dagger",
+      "relik"
+    ],
+    "tomes": [
+      "weaponTome",
+      "armorTome",
+      "guildTome",
+      "lootrunTome",
+      "gatherXpTome",
+      "dungeonXpTome",
+      "mobXpTome"
+    ]
+  }
 }

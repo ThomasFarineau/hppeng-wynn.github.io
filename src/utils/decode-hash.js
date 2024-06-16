@@ -1,4 +1,4 @@
-import {Base64} from "./base64";
+import {Base64} from "./";
 
 /*
 function getItemNameFromID(id) { return idMap.get(id); }
@@ -54,21 +54,28 @@ function parseEquipment(infoStr, versionNumber) {
     return { equipment, dataStr };
 }
 */
-function parseSkillPointsAndPowdering(dataStr, versionNumber) {
-    const skill_points = Array(5).fill(0);
-    let level = 106;
+function parseSkillPoints(encodedData, versionNumber) {
+    const skillPoints = Array(5).fill(0);
 
     if (versionNumber >= 2) {
         for (let i = 0; i < 5; i++) {
-            skill_points[i] = Base64.toIntSigned(dataStr.slice(i * 2, i * 2 + 2));
+            skillPoints[i] = Base64.toIntSigned(encodedData.slice(i * 2, i * 2 + 2));
         }
+        encodedData = encodedData.slice(10); // Modifier dataStr après avoir extrait les skill points
     }
+
+    return {skillPoints, encodedData};
+}
+
+function parseLevel(encodedData, versionNumber) {
+    let level = 106;
 
     if (versionNumber > 2) {
-        level = Base64.toInt(dataStr.slice(10, 12));
+        level = Base64.toInt(encodedData.slice(0, 2));
+        encodedData = encodedData.slice(2);
     }
 
-    return { skill_points, level };
+    return {level, encodedData};
 }
 
 /*
@@ -124,19 +131,41 @@ async function handleOldVersion(wynnVersionId) {
 */
 export function decodeHash(v, hash) {
     if (!hash) {
-        return {skill_points: Array(5).fill(0), level: 106};
+        return {skillPoints: Array(5).fill(0), level: 106};
     }
 
     let info = hash.split("_");
     let version = info[0];
     let versionNumber = parseInt(version);
-    let dataStr = info[1];
-    dataStr = dataStr.substring(27);
+    let encodedData = info[1];
 
+    let equipment = [null, null, null, null, null, null, null, null, null];
 
-    const {skill_points, level} = parseSkillPointsAndPowdering(dataStr, versionNumber);
+    let info_str = encodedData;
+    let start_idx = 0;
+    for (let i = 0; i < 9; ++i) {
+        if (info_str.slice(start_idx, start_idx + 3) === "CR-") {
+            equipment[i] = info_str.slice(start_idx, start_idx + 20);
+            start_idx += 20;
+        } else if (info_str.slice(start_idx + 3, start_idx + 6) === "CI-") {
+            let len = Base64.toInt(info_str.slice(start_idx, start_idx + 3));
+            equipment[i] = info_str.slice(start_idx + 3, start_idx + 3 + len);
+            start_idx += (3 + len);
+        } else {
+            let equipment_str = info_str.slice(start_idx, start_idx + 3);
+            equipment[i] = Base64.toInt(equipment_str);
+            start_idx += 3;
+        }
+    }
+    console.log(equipment)
 
-    return {skill_points, level};
+    encodedData = encodedData.substring(27);
+
+    const skillPointsResult = parseSkillPoints(encodedData, versionNumber);
+    const levelResult = parseLevel(skillPointsResult.encodedData, versionNumber);
+    console.log(levelResult.encodedData)
+
+    return {skillPoints: skillPointsResult.skillPoints, level: levelResult.level};
 }
 
 export function processURI() {

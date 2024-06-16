@@ -1,0 +1,52 @@
+@use '../../assets/variables' as v
+
+main
+  display: grid
+  grid-template: 'header header' auto 'left right' 1fr / 1fr 1fr
+  gap: v.$global_padding_div_2
+
+  @media (max-width: 1500px)
+    grid-template: 'header' min-content 'left' auto 'right' auto
+
+#left
+  grid-area: left
+  display: flex
+  flex-direction: column
+  gap: v.$global_padding_div_2
+
+#right
+  grid-area: right
+
+.equipments
+  display: grid
+  grid-template: 'armour accesories' auto 'weapon weapon' auto
+  grid-template-rows: auto auto
+  @media (max-width: 1100px)
+    grid-template: 'armour' auto 'accesories' auto 'weapon' auto
+  gap: v.$global_padding_div_2
+  grid-area: equipments
+
+  & > div
+    display: flex
+    flex-direction: column
+    gap: v.$global_padding_div_2
+
+  .armour
+    grid-area: armour
+
+  .accessories
+    grid-area: accesories
+
+  .weapon
+    grid-area: weapon
+
+.skills
+  display: grid
+  grid-template-columns: repeat(5, 1fr)
+  @media (max-width: 1100px)
+    grid-template-columns: repeat(2, 1fr)
+  @media (max-width: 740px)
+    grid-template-columns: 1fr
+  justify-content: center
+  gap: v.$global_padding_div_2
+  grid-area: skills

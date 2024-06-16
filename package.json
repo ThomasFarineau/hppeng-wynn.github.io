@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "get": "node scripts/get.js"
   },
   "author": "",
   "license": "ISC",
@@ -18,8 +19,13 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "@solid-primitives/keyed": "^1.2.2",
     "@solidjs/router": "^0.13.5",
+    "axios": "^1.7.2",
+    "boxicons": "^2.1.4",
     "buffer": "^6.0.3",
+    "commander": "^12.1.0",
+    "highland": "^2.13.5",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "sass": "^1.75.0",

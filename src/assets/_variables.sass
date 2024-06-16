@@ -3,19 +3,52 @@
 
 $font_family: 'Noto Sans', sans-serif
 $global_padding: 1rem
-$transition: all ease 0.25s
+$transition: all ease 0.2s
 
 $global_padding_div_2: math.div($global_padding, 2)
 $global_padding_div_4: math.div($global_padding, 4)
 
+$card_background: rgba(0, 0, 0, 0.4)
+
+$primary: #5865F2
+$secondary: rgb(17, 162, 162)
 $danger: rgb(162, 17, 17)
 $success: rgb(17, 162, 17)
 $warning: rgb(162, 162, 17)
 
 .card
-  background: rgba(0, 0, 0, 0.5)
-  backdrop-filter: blur(1rem)
+  background: $card_background
+  backdrop-filter: blur(0.5rem)
   border-radius: $global_padding_div_2
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 8px 0
   color: white
   padding: $global_padding_div_2
+
+$health_color: #AA0000
+$damage_color: #FFAA00
+$level_color: white
+$icon_bg_color: rgba(255, 255, 255, 0.05)
+
+$depressing_color: #AAAAAA
+$common_color: #fff
+$unique_color: #FFFF55
+$rare_color: #F752F7
+$legendary_color: #00FFFF
+$fabled_color: #FF5555
+$mythic_color: #aa00aa
+$set_color: #2B9618
+
+$colors: (depressing: $depressing_color, common: $common_color, unique: $unique_color, rare: $rare_color, legendary: $legendary_color, fabled: $fabled_color, mythic: $mythic_color, set: $set_color)
+
+@function text-color($color)
+  @if (lightness( $color ) >= 50)
+    @return #1a1a1a
+  @else
+    @return #eeeeee
+
+@mixin get-background-and-text($background-color)
+  background: $background-color
+  color: text-color($background-color)
+  span
+    &::after, &::before
+      background: text-color($background-color)

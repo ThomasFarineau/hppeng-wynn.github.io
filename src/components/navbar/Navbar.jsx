@@ -39,6 +39,12 @@ export default function Navbar() {
                     <p>Devlog</p>
                 </a>
             </li>
+            <li class={"bottom"}>
+                <a href="https://discord.com/invite/CGavnAnerv" target={"_blank"}>
+                    <img src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg" alt=""/>
+                    <p>Discord</p>
+                </a>
+            </li>
         </ul>
     </nav>);
 }

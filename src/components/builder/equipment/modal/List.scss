@@ -1,0 +1,28 @@
+@use '../../../../assets/variables' as v;
+
+$modes: (
+        normal: v.$common_color,
+        unique: v.$unique_color,
+        rare: v.$rare_color,
+        legendary: v.$legendary_color,
+        fabled: v.$fabled_color,
+        set: v.$set_color,
+        mythic: v.$mythic_color
+);
+
+$image_url: '../../../../assets/images/equipment/';
+
+$icons: (
+        relik: url($image_url + 'weapons/relik.webp'),
+        wand: url($image_url + 'weapons/wand.webp'),
+        spear: url($image_url + 'weapons/spear.webp'),
+        dagger: url($image_url + 'weapons/dagger.webp'),
+        bow: url($image_url + 'weapons/bow.webp'),
+        helmet: url($image_url + 'helmet.webp'),
+        chestplate: url($image_url + 'chestplate.webp'),
+        leggings: url($image_url + 'leggings.webp'),
+        boots: url($image_url + 'boots.webp'),
+        ring: url($image_url + 'ring.webp'),
+        necklace: url($image_url + 'necklace.webp'),
+        bracelet: url($image_url + 'bracelet.webp')
+);

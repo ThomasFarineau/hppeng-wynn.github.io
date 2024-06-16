@@ -1,12 +1,9 @@
 @use '../../assets/variables' as v
 
 nav
-  background: rgba(0, 0, 0, 0.5)
-  backdrop-filter: blur(1rem)
-  border-radius: v.$global_padding_div_2
+  @extend .card
   user-select: none
   height: 100%
-  padding: v.$global_padding_div_2
   overflow: hidden
 
   &.open
@@ -29,6 +26,9 @@ nav
       border-radius: v.$global_padding_div_4
       background: transparent
       transition: v.$transition
+
+      &.bottom
+        margin-top: auto
 
       &:hover
         background: rgba(255, 255, 255, 0.1)
