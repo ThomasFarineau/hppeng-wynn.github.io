@@ -3,6 +3,7 @@ import solidPlugin from 'vite-plugin-solid';
 
 export default defineConfig({
     plugins: [solidPlugin()],
+    base: 'wynnbuilder',
     build: {
         target: 'esnext',
     }
