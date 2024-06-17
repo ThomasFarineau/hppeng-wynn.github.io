@@ -16,11 +16,11 @@ function App() {
         <Navbar base={base}/>
         <main>
             <Router base={base}>
-                <Route path="/" component={() => <Navigate href="builder"/>}/>
-                <Route path="/builder" component={Builder}/>
-                <Route path="/crafter" component={Crafter}/>
-                <Route path="/atlas" component={Atlas}/>
-                <Route path="/devlog" component={Devlog}/>
+                <Route path="" component={() => <Navigate href="builder"/>}/>
+                <Route path="builder" component={Builder}/>
+                <Route path="crafter" component={Crafter}/>
+                <Route path="atlas" component={Atlas}/>
+                <Route path="devlog" component={Devlog}/>
             </Router>
         </main>
     </>;
