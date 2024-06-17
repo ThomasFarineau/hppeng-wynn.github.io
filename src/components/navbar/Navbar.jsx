@@ -1,5 +1,10 @@
 import './Navbar.sass';
 
+import builderIcon from "../../assets/images/icons/default/builder.png";
+import crafterIcon from "../../assets/images/icons/default/crafter.png";
+import atlasIcon from "../../assets/images/icons/default/atlas.png";
+import devlogIcon from "../../assets/images/icons/default/devlog.png";
+
 function handleMouseEnter(event) {
     const nav = event.target.closest('nav');
     nav.classList.add('open');
@@ -15,27 +20,28 @@ export default function Navbar() {
         <ul>
             <li>
                 <a href="/builder">
-                    <img src="/images/icons/default/builder.png" alt=""/>
+                    <img src={builderIcon} alt=""/>
                     <p>Builder</p>
                 </a>
             </li>
             <li>
                 <a href="/crafter">
-                    <img src="/images/icons/default/crafter.png" alt=""/>
+                    <img src={crafterIcon} alt=""/>
 
                     <p>Crafter</p>
                 </a>
             </li>
             <li>
                 <a href="/atlas">
-                    <img src="/images/icons/default/atlas.png" alt=""/>
+                    <img src={atlasIcon} alt=""/>
 
                     <p>Atlas</p>
                 </a>
             </li>
             <li>
                 <a href="/devlog">
-                    <img src="/images/icons/default/devlog.png" alt=""/>
+                    <img src={devlogIcon} alt=""/>
+
                     <p>Devlog</p>
                 </a>
             </li>
