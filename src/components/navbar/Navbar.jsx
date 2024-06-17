@@ -15,31 +15,32 @@ function handleMouseLeave(event) {
     nav.classList.remove('open');
 }
 
-export default function Navbar() {
+export default function Navbar(props) {
+    const {base} = props
     return (<nav onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <ul>
             <li>
-                <a href="/builder">
+                <a href={`${base}/builder`}>
                     <img src={builderIcon} alt=""/>
                     <p>Builder</p>
                 </a>
             </li>
             <li>
-                <a href="/crafter">
+                <a href={`${base}/crafter`}>
                     <img src={crafterIcon} alt=""/>
 
                     <p>Crafter</p>
                 </a>
             </li>
             <li>
-                <a href="/atlas">
+                <a href={`${base}/atlas`}>
                     <img src={atlasIcon} alt=""/>
 
                     <p>Atlas</p>
                 </a>
             </li>
             <li>
-                <a href="/devlog">
+                <a href={`${base}/devlog`}>
                     <img src={devlogIcon} alt=""/>
 
                     <p>Devlog</p>

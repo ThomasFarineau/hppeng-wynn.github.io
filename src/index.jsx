@@ -7,15 +7,16 @@ import Crafter from "./pages/Crafter";
 import Atlas from "./pages/Atlas";
 import Devlog from "./pages/Devlog";
 import {load} from "./utils";
+const base = process.env.BASE_PATH;
 
 function App() {
     load().then(() => console.log('loaded'));
 
     return <>
-        <Navbar/>
+        <Navbar base={base}/>
         <main>
-            <Router>
-                <Route path="/" component={() => <Navigate href={"/builder"}/>}/>
+            <Router base={base}>
+                <Route path="/" component={() => <Navigate href="builder"/>}/>
                 <Route path="/builder" component={Builder}/>
                 <Route path="/crafter" component={Crafter}/>
                 <Route path="/atlas" component={Atlas}/>

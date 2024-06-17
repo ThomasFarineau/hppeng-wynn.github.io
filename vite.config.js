@@ -6,5 +6,7 @@ export default defineConfig({
     base: process.argv.includes('dev') ? '' : process.env.BASE_PATH,
     build: {
         target: 'esnext',
-    },
+    }, define: {
+        'process.env': {}
+    }
 });
