@@ -20,27 +20,27 @@ export default function Navbar(props) {
     return (<nav onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <ul>
             <li>
-                <a href={`${base}/builder`}>
+                <a href="/builder">
                     <img src={builderIcon} alt=""/>
                     <p>Builder</p>
                 </a>
             </li>
             <li>
-                <a href={`${base}/crafter`}>
+                <a href="/crafter">
                     <img src={crafterIcon} alt=""/>
 
                     <p>Crafter</p>
                 </a>
             </li>
             <li>
-                <a href={`${base}/atlas`}>
+                <a href="atlas">
                     <img src={atlasIcon} alt=""/>
 
                     <p>Atlas</p>
                 </a>
             </li>
             <li>
-                <a href={`${base}/devlog`}>
+                <a href="devlog">
                     <img src={devlogIcon} alt=""/>
 
                     <p>Devlog</p>
