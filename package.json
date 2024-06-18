@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
-    "get": "node scripts/get.js"
+    "get": "node scripts/get.js",
+    "fix_id": "node scripts/old/fix_id.js",
+    "generate": "node scripts/generate.js",
+    "id-item-mapping-filler": "node scripts/id-item-mapping-filler.js"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +28,7 @@
     "boxicons": "^2.1.4",
     "buffer": "^6.0.3",
     "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
     "highland": "^2.13.5",
     "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",

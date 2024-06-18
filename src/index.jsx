@@ -8,7 +8,7 @@ import Atlas from './pages/Atlas';
 import Devlog from './pages/Devlog';
 import {load} from './utils';
 
-const base = '/wynnbuilder';
+const base = `/${process.env.BASE_URL || ''}`;
 
 const App = (props) => <>
   <Navbar />

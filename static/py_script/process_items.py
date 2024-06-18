@@ -7,7 +7,7 @@ OR
 - python process_items.py [infile and outfile]
 
 
-NOTE: id_map.json is due for change. Should be updated manually when Wynn2.0/corresponding WB version drops.
+NOTE: id_item_mapping.json is due for change. Should be updated manually when Wynn2.0/corresponding WB version drops.
 """
 
 import json

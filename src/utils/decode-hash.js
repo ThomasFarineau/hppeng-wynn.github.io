@@ -1,4 +1,5 @@
-import {Base64} from "./";
+import {Base64} from './';
+import _ from 'lodash';
 
 /*
 function getItemNameFromID(id) { return idMap.get(id); }
@@ -26,56 +27,65 @@ async function loadDefaultData(versionName) {
     ];
     await Promise.all(defaultLoadPromises);
 }
-
-function parseEquipment(infoStr, versionNumber) {
-    let equipment = Array(9).fill(null);
-    let dataStr;
-    if (versionNumber < 4) {
-        for (let i = 0; i < 9; i++) {
-            equipment[i] = getItemNameFromID(Base64.toInt(infoStr.slice(i * 3, i * 3 + 3)));
-        }
-        dataStr = infoStr.slice(27);
-    } else {
-        let startIdx = 0;
-        for (let i = 0; i < 9; i++) {
-            if (infoStr.charAt(startIdx) === '-') {
-                equipment[i] = `CR-${infoStr.slice(startIdx + 1, startIdx + 18)}`;
-                startIdx += 18;
-            } else {
-                const len = versionNumber <= 9 && infoStr.slice(startIdx, startIdx + 3) === 'CI-'
-                    ? Base64.toInt(infoStr.slice(startIdx, startIdx + 3))
-                    : 3;
-                equipment[i] = getItemNameFromID(Base64.toInt(infoStr.slice(startIdx, startIdx + len)));
-                startIdx += len;
-            }
-        }
-        dataStr = infoStr.slice(startIdx);
-    }
-    return { equipment, dataStr };
-}
 */
-function parseSkillPoints(encodedData, versionNumber) {
-    const skillPoints = Array(5).fill(0);
 
-    if (versionNumber >= 2) {
-        for (let i = 0; i < 5; i++) {
-            skillPoints[i] = Base64.toIntSigned(encodedData.slice(i * 2, i * 2 + 2));
-        }
-        encodedData = encodedData.slice(10); // Modifier dataStr après avoir extrait les skill points
-    }
+function parseEquipment(encodedData, versionNumber) {
+  let equipment = Array(9).fill(null);
+  if (versionNumber < 4) {
+    equipment = _.map(
+      _.range(9),
+      (
+        i //getItemNameFromID(Base64.toInt(encodedData.slice(i * 3, i * 3 + 3)))
+      ) => Base64.toInt(encodedData.slice(i * 3, i * 3 + 3))
+    );
+    encodedData = encodedData.slice(27);
+  } else {
+    let startIdx = 0;
+    equipment = _.map(_.range(9), (i) => {
+      let item;
+      if (encodedData.charAt(startIdx) === '-') {
+        item = `CR-${encodedData.slice(startIdx + 1, startIdx + 18)}`;
+        startIdx += 18;
+      } else {
+        const len =
+          versionNumber <= 9 &&
+          encodedData.slice(startIdx, startIdx + 3) === 'CI-'
+            ? Base64.toInt(encodedData.slice(startIdx, startIdx + 3))
+            : 3;
+        /*
+                item = getItemNameFromID(
+                  Base64.toInt(encodedData.slice(startIdx, startIdx + len))
+                );
+                
+                 */
+        item = Base64.toInt(encodedData.slice(startIdx, startIdx + len));
+        startIdx += len;
+      }
 
-    return {skillPoints, encodedData};
+      return item;
+    });
+    encodedData = encodedData.slice(startIdx);
+  }
+
+  return {equipment, encodedData};
 }
 
-function parseLevel(encodedData, versionNumber) {
-    let level = 106;
+function parseSkillPoints(encodedData) {
+  const skillPoints = _.map(_.range(5), (i) =>
+    Base64.toIntSigned(encodedData.slice(i * 2, i * 2 + 2))
+  );
+  encodedData = encodedData.slice(10);
 
-    if (versionNumber > 2) {
-        level = Base64.toInt(encodedData.slice(0, 2));
-        encodedData = encodedData.slice(2);
-    }
+  return {skillPoints, encodedData};
+}
 
-    return {level, encodedData};
+function parseLevel(encodedData) {
+  let level = 106;
+
+  level = Base64.toInt(encodedData.slice(0, 2));
+  encodedData = encodedData.slice(2);
+
+  return {level, encodedData};
 }
 
 /*
@@ -130,62 +140,44 @@ async function handleOldVersion(wynnVersionId) {
 }
 */
 export function decodeHash(v, hash) {
-    if (!hash) {
-        return {skillPoints: Array(5).fill(0), level: 106};
-    }
+  if (!hash) {
+    return {skillPoints: Array(5).fill(0), level: 106};
+  }
 
-    let info = hash.split("_");
-    let version = info[0];
-    let versionNumber = parseInt(version);
-    let encodedData = info[1];
+  let info = hash.split('_');
+  let version = info[0];
+  let versionNumber = parseInt(version);
+  let encodedData = info[1];
 
-    let equipment = [null, null, null, null, null, null, null, null, null];
+  const equipmentResult = parseEquipment(encodedData, versionNumber);
+  const skillPointsResult = parseSkillPoints(equipmentResult.encodedData);
+  const levelResult = parseLevel(skillPointsResult.encodedData);
 
-    let info_str = encodedData;
-    let start_idx = 0;
-    for (let i = 0; i < 9; ++i) {
-        if (info_str.slice(start_idx, start_idx + 3) === "CR-") {
-            equipment[i] = info_str.slice(start_idx, start_idx + 20);
-            start_idx += 20;
-        } else if (info_str.slice(start_idx + 3, start_idx + 6) === "CI-") {
-            let len = Base64.toInt(info_str.slice(start_idx, start_idx + 3));
-            equipment[i] = info_str.slice(start_idx + 3, start_idx + 3 + len);
-            start_idx += (3 + len);
-        } else {
-            let equipment_str = info_str.slice(start_idx, start_idx + 3);
-            equipment[i] = Base64.toInt(equipment_str);
-            start_idx += 3;
-        }
-    }
-    console.log(equipment)
-
-    encodedData = encodedData.substring(27);
-
-    const skillPointsResult = parseSkillPoints(encodedData, versionNumber);
-    const levelResult = parseLevel(skillPointsResult.encodedData, versionNumber);
-    console.log(levelResult.encodedData)
-
-    return {skillPoints: skillPointsResult.skillPoints, level: levelResult.level};
+  return {
+    equipment: equipmentResult.equipment,
+    skillPoints: skillPointsResult.skillPoints,
+    level: levelResult.level
+  };
 }
 
 export function processURI() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const v = urlParams.get('v');
-    const hash = window.location.hash.substring(1);
+  const urlParams = new URLSearchParams(window.location.search);
+  const v = urlParams.get('v');
+  const hash = window.location.hash.substring(1);
 
-    if (v && localStorage.getItem('v') !== v) {
-        localStorage.setItem('v', v);
-    }
+  if (v && localStorage.getItem('v') !== v) {
+    localStorage.setItem('v', v);
+  }
 
-    if (hash && localStorage.getItem('hash') !== hash) {
-        localStorage.setItem('hash', hash);
-    }
+  if (hash && localStorage.getItem('hash') !== hash) {
+    localStorage.setItem('hash', hash);
+  }
 
-    const storedV = localStorage.getItem('v');
-    const storedHash = localStorage.getItem('hash');
+  const storedV = localStorage.getItem('v');
+  const storedHash = localStorage.getItem('hash');
 
-    if (storedV && storedHash) {
-        const newUrl = `${window.location.origin}${window.location.pathname}?v=${storedV}#${storedHash}`;
-        window.history.replaceState({}, '', newUrl);
-    }
+  if (storedV && storedHash) {
+    const newUrl = `${window.location.origin}${window.location.pathname}?v=${storedV}#${storedHash}`;
+    window.history.replaceState({}, '', newUrl);
+  }
 }
