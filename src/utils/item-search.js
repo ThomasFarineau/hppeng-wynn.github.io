@@ -90,3 +90,25 @@ function matchesTier(item, tiers) {
 
   return tiers.includes(item.tier);
 }
+
+export function getItemByID(id) {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('wynncraft-data', 1);
+    req.onsuccess = (event) => {
+      const db = event.target.result;
+      const tx = db.transaction('items', 'readonly');
+      const store = tx.objectStore('items');
+
+      const reqItem = store.get(id);
+      reqItem.onsuccess = () => {
+        resolve(reqItem.result);
+      };
+      reqItem.onerror = () => {
+        reject(reqItem.error);
+      };
+    };
+    req.onerror = () => {
+      reject(req.error);
+    };
+  });
+}

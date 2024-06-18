@@ -31,14 +31,14 @@ const main = () => {
       if (idItemMapping[k]) {
         items[key].name = key;
         items[key].internalName = k;
-        delete items[key].armorType;
-        delete items[key].armorColor;
+        delete items[key]['armorType'];
+        delete items[key]['armorColor'];
         delete items[key].lore;
-        delete items[key].material;
+        delete items[key]['material'];
+
         /*
 
 
-        delete items[key].material;
         delete items[key].identified;
         delete items[key].dropRestriction;
         delete items[key].dropMeta;
@@ -57,12 +57,12 @@ const main = () => {
           _.keys(idItemMapping).filter((key) => key.includes(camelCasedItem))
         );
 
-        const itemIdKey = matchingKeys[0];
-        const itemId = itemIdKey ? idItemMapping[itemIdKey] : material.item;
+        const marchingValues = matchingKeys.map((key) => idItemMapping[key]);
+
 
         return {
           ...material,
-          item: itemId || _.camelCase(material.item)
+          item: [marchingValues]
         };
       });
       const id = recipe.id;

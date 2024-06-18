@@ -1,4 +1,4 @@
-import {Base64} from './';
+import {Base64, getItemByID} from './';
 import _ from 'lodash';
 
 /*
@@ -29,10 +29,10 @@ async function loadDefaultData(versionName) {
 }
 */
 
-function parseEquipment(encodedData, versionNumber) {
-  let equipment = Array(9).fill(null);
+async function parseEquipment(encodedData, versionNumber) {
+  let equipmentIds = Array(9).fill(null);
   if (versionNumber < 4) {
-    equipment = _.map(
+    equipmentIds = _.map(
       _.range(9),
       (
         i //getItemNameFromID(Base64.toInt(encodedData.slice(i * 3, i * 3 + 3)))
@@ -41,7 +41,7 @@ function parseEquipment(encodedData, versionNumber) {
     encodedData = encodedData.slice(27);
   } else {
     let startIdx = 0;
-    equipment = _.map(_.range(9), (i) => {
+    equipmentIds = _.map(_.range(9), () => {
       let item;
       if (encodedData.charAt(startIdx) === '-') {
         item = `CR-${encodedData.slice(startIdx + 1, startIdx + 18)}`;
@@ -56,7 +56,7 @@ function parseEquipment(encodedData, versionNumber) {
                 item = getItemNameFromID(
                   Base64.toInt(encodedData.slice(startIdx, startIdx + len))
                 );
-                
+
                  */
         item = Base64.toInt(encodedData.slice(startIdx, startIdx + len));
         startIdx += len;
@@ -67,7 +67,29 @@ function parseEquipment(encodedData, versionNumber) {
     encodedData = encodedData.slice(startIdx);
   }
 
-  return {equipment, encodedData};
+  // transform equipment into a map of
+  /*
+  type: item
+   */
+
+  const equipments = {}
+  for (let i = 0; i < equipmentIds.length; i++) {
+    let equipment = await getItemByID(equipmentIds[i]);
+
+    if (equipment) {
+      let type = equipment.type || equipment.accessoryType;
+      if(equipments[type]) {
+        equipments[type + i] = equipment;
+
+      } else {
+        equipments[type] = equipment;
+      }
+    }
+
+
+  }
+
+  return {equipments, encodedData};
 }
 
 function parseSkillPoints(encodedData) {
@@ -139,7 +161,7 @@ async function handleOldVersion(wynnVersionId) {
     return wynnVersionId;
 }
 */
-export function decodeHash(v, hash) {
+export async function decodeHash(v, hash) {
   if (!hash) {
     return {skillPoints: Array(5).fill(0), level: 106};
   }
@@ -149,12 +171,12 @@ export function decodeHash(v, hash) {
   let versionNumber = parseInt(version);
   let encodedData = info[1];
 
-  const equipmentResult = parseEquipment(encodedData, versionNumber);
+  const equipmentResult = await parseEquipment(encodedData, versionNumber);
   const skillPointsResult = parseSkillPoints(equipmentResult.encodedData);
   const levelResult = parseLevel(skillPointsResult.encodedData);
 
   return {
-    equipment: equipmentResult.equipment,
+    equipments: equipmentResult.equipments,
     skillPoints: skillPointsResult.skillPoints,
     level: levelResult.level
   };

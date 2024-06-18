@@ -6,7 +6,7 @@ import {storeItem} from "../../../store";
 export function Equipment(props) {
     const { type, index } = props;
     const { Modal, openModal } = createModal();
-    const [item, setItem] = createSignal(null);
+    const [item, setItem] = createSignal(defaultItem);
     const [bonus, setBonus] = createSignal(0);
     const [level, setLevel] = createSignal(0);
     let input;
