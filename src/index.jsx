@@ -1,4 +1,5 @@
 import './index.sass';
+import {createSignal} from 'solid-js';
 import {render} from 'solid-js/web';
 import {Navigate, Route, Router} from '@solidjs/router';
 import Navbar from './components/navbar/Navbar';
@@ -10,21 +11,36 @@ import {load} from './utils';
 
 const base = `/${process.env.BASE_URL || ''}`;
 
-const App = (props) => <>
-  <Navbar />
-  <main>
-    {props.children}
-  </main>
-</>;
+const App = (props) => (
+  <>
+    <Navbar />
+    <main>{props.children}</main>
+  </>
+);
+
+const Loader = () => <div class="loader">Loader</div>;
 
 render(() => {
-  load().then(() => console.log(`Loaded and running on ${base}`));
+  const [loading, setLoading] = createSignal(true);
 
-  return <Router root={App} base={base}>
-    <Route path="/" component={() => <Navigate href="builder" />} />
-    <Route path="/builder" component={Builder} />
-    <Route path="/crafter" component={Crafter} />
-    <Route path="/atlas" component={Atlas} />
-    <Route path="/devlog" component={Devlog} />
-  </Router>;
+  load().then(() => {
+    console.log(`Loaded and running on ${base}`);
+    setLoading(false);
+  });
+
+  return (
+    <>
+      {loading() ? (
+        <Loader />
+      ) : (
+        <Router root={App} base={base}>
+          <Route path="/" component={() => <Navigate href="builder" />} />
+          <Route path="/builder" component={Builder} />
+          <Route path="/crafter" component={Crafter} />
+          <Route path="/atlas" component={Atlas} />
+          <Route path="/devlog" component={Devlog} />
+        </Router>
+      )}
+    </>
+  );
 }, document.getElementById('root'));

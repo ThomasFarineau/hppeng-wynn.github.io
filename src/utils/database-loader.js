@@ -10,7 +10,7 @@ export async function load() {
     const shouldClean = await checkDatabaseSize();
     if (shouldClean) {
       await clean();
-      await createItemDatabase();
+      await createDatabase();
       await fillIndexedDatabase();
     } else {
       items = await getItems();
@@ -20,6 +20,36 @@ export async function load() {
   } catch (error) {
     console.error('Error initializing database:', error);
   }
+}
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('wynncraft-data', 1);
+    req.onsuccess = (event) => resolve(event.target.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function createObjectStores(db) {
+  const storeNames = ['items', 'recipes', 'sets'];
+  storeNames.forEach((store) => {
+    if (!db.objectStoreNames.contains(store)) {
+      db.createObjectStore(store, {keyPath: store === 'items' ? 'id' : 'name'});
+    }
+  });
+}
+
+function performTransaction(stores, mode, action) {
+  return openDatabase().then((db) => {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(stores, mode);
+      action(tx)
+        .then(() => resolve())
+        .catch((error) => reject(error));
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  });
 }
 
 function clean() {
@@ -36,50 +66,23 @@ function clean() {
   });
 }
 
-const createItemDatabase = () =>
-  new Promise((resolve, reject) => {
-    const req = indexedDB.open('wynncraft-data', 1);
-    req.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      if (!db.objectStoreNames.contains('items')) {
-        db.createObjectStore('items', {keyPath: 'id'});
-      }
-      if (!db.objectStoreNames.contains('recipes')) {
-        db.createObjectStore('recipes', {keyPath: 'name'});
-      }
-      if (!db.objectStoreNames.contains('sets')) {
-        db.createObjectStore('sets', {keyPath: 'name'});
-      }
-
-      const transaction = event.target.transaction;
-      transaction.oncomplete = () => {
-        console.log('Object stores created successfully');
-        resolve();
-      };
-      transaction.onerror = () => {
-        console.error('Error creating object stores');
-        reject(transaction.error);
-      };
-    };
-    req.onsuccess = () => {
-      console.log('Database opened successfully');
-      resolve();
-    };
-    req.onerror = () => {
-      console.error('Error opening database');
-      reject(req.error);
-    };
-  });
-
-function getItems() {
+const createDatabase = () => {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open('wynncraft-data', 1);
-    req.onsuccess = (event) => {
-      const db = event.target.result;
-      const tx = db.transaction('items', 'readonly');
+    req.onupgradeneeded = (event) => {
+      createObjectStores(event.target.result);
+      resolve();
+    };
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+};
+
+function getItems() {
+  return performTransaction(['items'], 'readonly', (tx) => {
+    return new Promise((resolve, reject) => {
       const store = tx.objectStore('items');
       const items = [];
-
       const reqCursor = store.openCursor();
       reqCursor.onsuccess = (event) => {
         const cursor = event.target.result;
@@ -90,25 +93,16 @@ function getItems() {
           resolve(items);
         }
       };
-      reqCursor.onerror = () => {
-        reject(reqCursor.error);
-      };
-    };
-    req.onerror = () => {
-      reject(req.error);
-    };
+      reqCursor.onerror = () => reject(reqCursor.error);
+    });
   });
 }
 
 function getSets() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open('wynncraft-data', 1);
-    req.onsuccess = (event) => {
-      const db = event.target.result;
-      const tx = db.transaction('sets', 'readonly');
+  return performTransaction(['sets'], 'readonly', (tx) => {
+    return new Promise((resolve, reject) => {
       const store = tx.objectStore('sets');
       const sets = new Map();
-
       const reqCursor = store.openCursor();
       reqCursor.onsuccess = (event) => {
         const cursor = event.target.result;
@@ -119,50 +113,38 @@ function getSets() {
           resolve(sets);
         }
       };
-      reqCursor.onerror = () => {
-        reject(reqCursor.error);
-      };
-    };
-    req.onerror = () => {
-      reject(req.error);
-    };
+      reqCursor.onerror = () => reject(reqCursor.error);
+    });
   });
 }
 
 function fillIndexedDatabase() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open('wynncraft-data', 1);
-    req.onsuccess = (event) => {
-      const db = event.target.result;
-      const tx = db.transaction(['items', 'recipes', 'sets'], 'readwrite');
+  return performTransaction(['items', 'recipes', 'sets'], 'readwrite', (tx) => {
+    return new Promise((resolve, reject) => {
       const itemStore = tx.objectStore('items');
       const recipeStore = tx.objectStore('recipes');
       const setStore = tx.objectStore('sets');
 
-      // Add items
       _.forOwn(database.items, (item, key) => {
         item.id = Number(key);
         itemStore.put(item);
       });
 
-      // Add recipes
       _.forOwn(database.recipes, (recipe, key) => {
         recipe.name = key;
         recipeStore.put(recipe);
       });
 
-      // Create sets
       const sets = {};
       _.forOwn(database.items, (item, key) => {
         if (item.tier === 'set') {
           if (item.setName !== undefined && !sets[item.setName]) {
-            sets[setName] = {name: item.setName, items: []};
+            sets[item.setName] = {name: item.setName, items: []};
           }
           sets[item.setName].items.push(key);
         }
       });
 
-      // Add sets
       _.forOwn(sets, (set) => {
         setStore.put(set);
       });
@@ -171,15 +153,8 @@ function fillIndexedDatabase() {
         console.log('All items, recipes, and sets added successfully');
         resolve();
       };
-      tx.onerror = () => {
-        console.error('Error adding items, recipes, and sets');
-        reject(tx.error);
-      };
-    };
-    req.onerror = () => {
-      console.error('Error opening database');
-      reject(req.error);
-    };
+      tx.onerror = () => reject(tx.error);
+    });
   });
 }
 
@@ -189,17 +164,12 @@ function checkDatabaseSize() {
     let databaseExists = true;
 
     req.onupgradeneeded = (event) => {
-      // Database does not exist yet
       databaseExists = false;
-      const db = event.target.result;
-      db.createObjectStore('items', {keyPath: 'name'});
-      db.createObjectStore('recipes', {keyPath: 'name'});
-      db.createObjectStore('sets', {keyPath: 'name'});
+      createObjectStores(event.target.result);
     };
 
     req.onsuccess = (event) => {
       if (!databaseExists) {
-        // If database does not exist, it needs to be filled
         resolve(true);
 
         return;
@@ -212,12 +182,8 @@ function checkDatabaseSize() {
           .transaction('items', 'readonly')
           .objectStore('items')
           .count();
-        itemCountReq.onsuccess = () => {
-          resolve(itemCountReq.result);
-        };
-        itemCountReq.onerror = () => {
-          reject(itemCountReq.error);
-        };
+        itemCountReq.onsuccess = () => resolve(itemCountReq.result);
+        itemCountReq.onerror = () => reject(itemCountReq.error);
       });
 
       const checkRecipeCount = new Promise((resolve, reject) => {
@@ -225,12 +191,8 @@ function checkDatabaseSize() {
           .transaction('recipes', 'readonly')
           .objectStore('recipes')
           .count();
-        recipeCountReq.onsuccess = () => {
-          resolve(recipeCountReq.result);
-        };
-        recipeCountReq.onerror = () => {
-          reject(recipeCountReq.error);
-        };
+        recipeCountReq.onsuccess = () => resolve(recipeCountReq.result);
+        recipeCountReq.onerror = () => reject(recipeCountReq.error);
       });
 
       Promise.all([checkItemCount, checkRecipeCount])

@@ -1,5 +1,6 @@
 import {Base64, getItemByID} from './';
 import _ from 'lodash';
+import {builderData} from '../data';
 
 /*
 function getItemNameFromID(id) { return idMap.get(id); }
@@ -31,16 +32,16 @@ async function loadDefaultData(versionName) {
 
 async function parseEquipment(encodedData, versionNumber) {
   let equipmentIds = Array(9).fill(null);
+
   if (versionNumber < 4) {
-    equipmentIds = _.map(
-      _.range(9),
-      (
-        i //getItemNameFromID(Base64.toInt(encodedData.slice(i * 3, i * 3 + 3)))
-      ) => Base64.toInt(encodedData.slice(i * 3, i * 3 + 3))
+    // For version numbers less than 4, decode equipment IDs directly from the encoded data
+    equipmentIds = _.map(_.range(9), (i) =>
+      Base64.toInt(encodedData.slice(i * 3, i * 3 + 3))
     );
-    encodedData = encodedData.slice(27);
+    encodedData = encodedData.slice(27); // Remove processed part from encoded data
   } else {
     let startIdx = 0;
+    // For version numbers 4 and above, handle different encoding schemes
     equipmentIds = _.map(_.range(9), () => {
       let item;
       if (encodedData.charAt(startIdx) === '-') {
@@ -52,41 +53,51 @@ async function parseEquipment(encodedData, versionNumber) {
           encodedData.slice(startIdx, startIdx + 3) === 'CI-'
             ? Base64.toInt(encodedData.slice(startIdx, startIdx + 3))
             : 3;
-        /*
-                item = getItemNameFromID(
-                  Base64.toInt(encodedData.slice(startIdx, startIdx + len))
-                );
-
-                 */
         item = Base64.toInt(encodedData.slice(startIdx, startIdx + len));
         startIdx += len;
       }
 
       return item;
     });
-    encodedData = encodedData.slice(startIdx);
+    encodedData = encodedData.slice(startIdx); // Remove processed part from encoded data
   }
 
-  // transform equipment into a map of
-  /*
-  type: item
-   */
+  // Fetch equipment details asynchronously
+  const equipmentsArray = await Promise.all(
+    _.map(equipmentIds, async (id) => await getItemByID(id))
+  );
 
-  const equipments = {}
-  for (let i = 0; i < equipmentIds.length; i++) {
-    let equipment = await getItemByID(equipmentIds[i]);
+  // Count occurrences of each equipment type
+  const typeCounter = _.countBy(
+    equipmentsArray,
+    (equipment) => equipment.type || equipment.accessoryType
+  );
+
+  const equipments = {};
+
+  // Initialize an index counter for each type
+  const typeIndex = {};
+
+  for (let i = 0; i < equipmentsArray.length; i++) {
+    let equipment = equipmentsArray[i];
 
     if (equipment) {
       let type = equipment.type || equipment.accessoryType;
-      if(equipments[type]) {
-        equipments[type + i] = equipment;
+      if (builderData.types.weapon.includes(type)) type = 'weapon';
 
+      if (!typeIndex[type]) {
+        typeIndex[type] = 1;
+      }
+
+      if (typeCounter[type] > 1) {
+        // If there are multiple items of the same type, append the index to the type
+        equipments[`${type}${typeIndex[type]}`] = equipment;
+        typeIndex[type]++;
       } else {
+        // If there's only one item of this type, assign it directly
         equipments[type] = equipment;
       }
     }
-
-
   }
 
   return {equipments, encodedData};

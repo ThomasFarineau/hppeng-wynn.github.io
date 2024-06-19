@@ -99,5 +99,38 @@
       "dungeonXpTome",
       "mobXpTome"
     ]
-  }
+  },
+  "classes": {
+    "bow": {
+      "default": "Archer",
+      "reskinned": "Hunter"
+    },
+    "spear": {
+      "default": "Warrior",
+      "reskinned": "Knight"
+    },
+    "dagger": {
+      "default": "Assassin",
+      "reskinned": "Ninja"
+    },
+    "wand": {
+      "default": "Mage",
+      "reskinned": "Dark Wizard"
+    },
+    "relik": {
+      "default": "Shaman",
+      "reskinned": "Skyseer"
+    }
+  },
+  "typesStore": [
+    "weapon",
+    "ring1",
+    "ring2",
+    "bracelet",
+    "necklace",
+    "helmet",
+    "chestplate",
+    "leggings",
+    "boots"
+  ]
 }

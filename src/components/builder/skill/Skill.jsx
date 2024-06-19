@@ -1,67 +1,80 @@
 import './Skill.sass';
-import {createEffect, createSignal, onCleanup} from 'solid-js';
-import {bonusAndMandatorySignal, setError, skillStore, updateTotal} from "../../../store";
+import {createEffect, createSignal} from 'solid-js';
+import {
+  equipmentStore,
+  setError,
+  setSkillStore,
+  skillStore
+} from '../../../store';
 
 export function Skill(props) {
-    const {icon, title, color, value} = props;
-    const [getSelf, setSelf] = createSignal(value - bonusAndMandatorySignal().bonus[props.id]);
-    const [getValue, setValue] = createSignal(value);
-    const [hasError, setHasError] = createSignal(false);
+  const {icon, title, color, id} = props;
+  const [getValue, setValue] = createSignal(0);
+  const [getSelf, setSelf] = createSignal(0);
+  const [hasError, setHasError] = createSignal(false);
 
-    createEffect(() => {
-        const bonus = bonusAndMandatorySignal().bonus[props.id];
-        const initialSelf = value - bonus;
-        setSelf(initialSelf);
-        updateTotal(initialSelf);
+  createEffect(() => {
+    const bonus = equipmentStore.bonusSkillpoints[id];
+    const mandatory = equipmentStore.mandatorySkillpoints[id];
+    const initialValue = skillStore.value[id] || mandatory;
 
-        onCleanup(() => updateTotal(-initialSelf));
-    });
+    setValue(initialValue);
+    setSelf(initialValue - bonus);
+  });
 
-    createEffect(() => {
-        const potentialTotal = skillStore.currentTotal;
-        const errorCondition = potentialTotal > skillStore.maxPoints;
-        setHasError(errorCondition);
-        setError(errorCondition ? `Total skill points cannot exceed ${skillStore.maxPoints}.` : null);
-    });
+  createEffect(() => {
+    const potentialTotal = skillStore.currentTotal;
+    const errorCondition = potentialTotal > skillStore.maxPoints;
+    setHasError(errorCondition);
+    setError(
+      errorCondition
+        ? `Total skill points cannot exceed ${skillStore.maxPoints}.`
+        : null
+    );
+  });
 
-    createEffect(() => {
-        const bonus = bonusAndMandatorySignal().bonus[props.id];
-        setSelf(value - bonus);
-    });
+  createEffect(() => {
+    const bonus = equipmentStore.bonusSkillpoints[id];
+    const mandatory = equipmentStore.mandatorySkillpoints[id];
+    const newValue = getValue() < mandatory ? mandatory : getValue();
+    setSelf(newValue - bonus);
+  });
 
-    const changeValue = v => {
-        const bonus = bonusAndMandatorySignal().bonus[props.id]
-        const mandatory = bonusAndMandatorySignal().mandatory[props.id];
-        v = parseInt(v);
-        v = isNaN(v) ? bonus + mandatory : v;
+  const changeValue = (v) => {
+    const bonus = equipmentStore.bonusSkillpoints[id];
+    const mandatory = equipmentStore.mandatorySkillpoints[id];
+    v = parseInt(v);
+    v = isNaN(v) ? mandatory : v;
 
-        if (v < (mandatory + bonus)) v = mandatory + bonus;
+    if (v < mandatory) v = mandatory;
 
-        const newSelf = v - bonus;
-        const potentialTotal = skillStore.currentTotal - getSelf() + newSelf;
-        if (potentialTotal <= skillStore.maxPoints) {
-            setError(null);
-            updateTotal(newSelf - getSelf());
-            setSelf(newSelf);
-            setValue(v);
-        } else {
-            updateTotal(newSelf - getSelf());
-            setSelf(newSelf);
-            setValue(v);
-            setError(`Total skill points cannot exceed ${skillStore.maxPoints}.`);
-        }
-    };
+    const newSelf = v - bonus;
+    const potentialTotal = skillStore.currentTotal - getSelf() + newSelf;
+    if (potentialTotal <= skillStore.maxPoints) {
+      setError(null);
+      setSelf(newSelf);
+      setValue(v);
+      setSkillStore('value', id, v);
+    } else {
+      setError(`Total skill points cannot exceed ${skillStore.maxPoints}.`);
+    }
+  };
 
-    return <div class={`skill ${hasError() ? 'error' : ''}`} style={{color: color}}>
-        <span class={"icon"}>{icon}</span>
-        <h2>{title}</h2>
-        <input
-            type="number"
-            value={getValue()}
-            min={bonusAndMandatorySignal().mandatory[props.id] + bonusAndMandatorySignal().bonus[props.id]}
-            onInput={(e) => changeValue(e.target.value)}
-            onFocusOut={(e) => e.target.value = getValue()}
-        />
-        <p>Assigned: {getSelf()} (+{bonusAndMandatorySignal().bonus[props.id]}) - {bonusAndMandatorySignal().mandatory[props.id]}</p>
-    </div>;
+  return (
+    <div class={`skill ${hasError() ? 'error' : ''}`} style={{color: color}}>
+      <span class={'icon'}>{icon}</span>
+      <h2>{title}</h2>
+      <input
+        type="number"
+        value={getValue()}
+        min={equipmentStore.mandatorySkillpoints[id]}
+        onInput={(e) => changeValue(e.target.value)}
+        onFocusOut={(e) => (e.target.value = getValue())}
+      />
+      <p>
+        Assigned: {getSelf()} (+{equipmentStore.bonusSkillpoints[id]}) -
+        {equipmentStore.mandatorySkillpoints[id]}
+      </p>
+    </div>
+  );
 }

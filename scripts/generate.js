@@ -35,17 +35,16 @@ const main = () => {
         delete items[key]['armorColor'];
         delete items[key].lore;
         delete items[key]['material'];
+        if (items[key]['accessoryType'])
+          items[key].type = items[key]['accessoryType'];
+        delete items[key]['accessoryType'];
 
-        /*
+        delete items[key]['identified'];
+        delete items[key]['dropRestriction'];
+        delete items[key]['dropMeta'];
+        delete items[key]['restrictions'];
+        delete items[key]['droppedBy'];
 
-
-        delete items[key].identified;
-        delete items[key].dropRestriction;
-        delete items[key].dropMeta;
-        delete items[key].restrictions;
-        delete items[key].droppedBy;
-
-         */
         resultItems[idItemMapping[k]] = items[key];
       }
     });
@@ -58,7 +57,6 @@ const main = () => {
         );
 
         const marchingValues = matchingKeys.map((key) => idItemMapping[key]);
-
 
         return {
           ...material,
