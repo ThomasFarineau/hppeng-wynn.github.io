@@ -25,8 +25,8 @@ $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$u
   .item
     flex: 8
     display: flex
-    flex-direction: row
-    align-items: baseline
+    flex-direction: column
+    align-items: flex-end
 
     input
       background: rgba(0, 0, 0, 0.5)
@@ -44,6 +44,18 @@ $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$u
       &:focus
         background: rgba(255, 255, 255, 0.1)
         outline: none
+
+    .powders
+      display: flex
+      flex-direction: row
+      gap: v.$global_padding_div_4
+      flex: 1
+
+      .powder
+        width: 3rem
+        background: #0a0c0d
+        padding: v.$global_padding_div_4
+        border-radius: v.$global_padding_div_4
 
   &.weapon, &.relik, &.bow, &.dagger, &.spear, &.wand
     .info

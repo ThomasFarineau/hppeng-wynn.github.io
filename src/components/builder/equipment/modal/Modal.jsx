@@ -205,9 +205,7 @@ export function createModal() {
                     <For each={items()}>
                       {(item) => (
                         <li class={item.tier} onClick={() => onItemClick(item)}>
-                          <div
-                            class={`icon ${item.type ?? item.accessoryType}`}
-                          ></div>
+                          <div class={`icon ${item.type}`}></div>
                           {item.name}
                         </li>
                       )}

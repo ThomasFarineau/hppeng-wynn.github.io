@@ -59,16 +59,9 @@ function matchesCriteria(item, type, name, config) {
 }
 
 function matchesType(item, type) {
-  switch (type) {
-    case TypeEnum.WEAPON:
-      return builderData.types.weapon.includes(item.type);
-    case TypeEnum.RING:
-    case TypeEnum.BRACELET:
-    case TypeEnum.NECKLACE:
-      return item.accessoryType === type;
-    default:
-      return item.type === type;
-  }
+  return type === TypeEnum.WEAPON
+    ? builderData.types.weapon.includes(item.type)
+    : item.type === type;
 }
 
 function matchesName(item, name) {

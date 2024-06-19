@@ -1,14 +1,17 @@
-import {createEffect, createSignal} from 'solid-js';
+import {createEffect, createSignal, For} from 'solid-js';
 import {createModal} from './modal/Modal';
 import './Equipment.sass';
 import {equipmentStore, storeItem} from '../../../store';
 
 export function Equipment(props) {
-  const {type, index, setRef} = props;
+  const {type, index} = props;
+
   const {Modal, openModal} = createModal();
   const [item, setItem] = createSignal(null);
-  const [bonus, setBonus] = createSignal(0);
+  const [powders, setPowders] = createSignal([]);
   const [level, setLevel] = createSignal(0);
+  const [bonus, setBonus] = createSignal(0);
+
   let input;
 
   const updateItem = (item) => {
@@ -17,6 +20,8 @@ export function Equipment(props) {
     storeItem(key, item);
     setBonus(item.base?.health || item.base?.averageDPS || 0);
     setLevel(item.requirements?.level || 0);
+
+    setPowders(new Array(item.powderSlots).fill(null));
   };
 
   createEffect(() => {
@@ -26,18 +31,15 @@ export function Equipment(props) {
       setItem(storedItem);
       setBonus(storedItem.base?.health || storedItem.base?.averageDPS || 0);
       setLevel(storedItem.requirements?.level || 0);
+
+      setPowders(new Array(storedItem.powderSlots).fill(null));
     }
   });
-
-  // Expose the updateItem function through the ref
-  if (setRef) {
-    setRef(updateItem);
-  }
 
   return (
     <>
       <div
-        class={`equipment ${item() ? item().type || item().accessoryType : type} ${item() ? item().tier : ''}`}
+        class={`equipment ${item() ? item().type : type} ${item() ? item().tier : ''}`}
       >
         <div class="icon"></div>
         <div class="info">
@@ -51,6 +53,11 @@ export function Equipment(props) {
             type="text"
             onFocusIn={(e) => openModal(type, e.target.value, updateItem)}
           />
+          <div class="powders">
+            <For each={powders()}>
+              {(slot, i) => <div class={`powder`}>a</div>}
+            </For>
+          </div>
         </div>
       </div>
       <Modal input={input} type={type} setItem={updateItem} />

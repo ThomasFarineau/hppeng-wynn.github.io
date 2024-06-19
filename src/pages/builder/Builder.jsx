@@ -4,12 +4,7 @@ import {createSignal, For} from 'solid-js';
 import {builderData} from '../../data';
 import {decodeHash, processURI} from '../../utils';
 import {Entries} from '@solid-primitives/keyed';
-import {
-  equipmentStore,
-  setSkillValue,
-  skillStore,
-  storeItem
-} from '../../store';
+import {setSkillValue, storeItem} from '../../store';
 import _ from 'lodash';
 
 export default function Builder() {
@@ -21,9 +16,6 @@ export default function Builder() {
         : (level - 1) * 2;
   let level = 0;
   const [levelValue, setLevelValue] = createSignal(level);
-
-  const equipmentRefs = {};
-
   const setLevel = (value) => {
     setLevelValue(
       Math.min(
