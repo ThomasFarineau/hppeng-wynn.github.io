@@ -1,0 +1,151 @@
+@use "sass:map"
+@use '../../../../assets/variables' as v
+@import "List"
+
+@mixin track
+  ::-webkit-slider-runnable-track
+    @content
+  ::-moz-range-track
+    @content
+  ::-moz-focus-outer
+    border: 0
+
+@mixin thumb
+  ::-webkit-slider-thumb
+    @content
+  ::-moz-range-thumb
+    @content
+
+.modal
+  position: absolute
+  inset: 0
+  display: flex
+  justify-content: center
+  align-items: center
+  z-index: 1000
+  background: rgba(0, 0, 0, 0.2)
+
+  .modal-body
+    padding: 2rem
+    background: #27272c
+    color: white
+    border-radius: v.$global_padding_div_2
+    box-shadow: rgba(0, 0, 0, 0.2) 0 7px 29px 0
+    display: flex
+    flex-direction: column
+    gap: v.$global_padding
+    max-width: 30rem
+    width: 100%
+    transition: transform 0.3s ease, opacity 0.3s ease
+    transform: scale(1)
+    opacity: 1
+
+    &.animation
+      transform: scale(0.8)
+      opacity: 0
+
+    .powder-select
+      display: flex
+      flex-direction: column
+      gap: v.$global_padding
+      margin-bottom: v.$global_padding
+
+      .tags
+        display: grid
+        grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr))
+        gap: v.$global_padding_div_2
+        margin-top: v.$global_padding
+
+        .tag
+          padding: v.$global_padding_div_4 v.$global_padding_div_2
+          border-radius: v.$global_padding_div_4
+          background: rgba(0, 0, 0, 0.5)
+          cursor: pointer
+          transition: v.$transition
+          text-transform: capitalize
+          text-align: left
+          font-weight: bold
+          display: flex
+          justify-content: space-between
+          border: 2px solid transparent
+          opacity: 1
+
+          &:hover
+            border-color: rgba(0, 0, 0, 0.5)
+
+          @each $mode, $color in $powders
+            &.#{$mode}
+              +v.get-background-and-text($color)
+
+      label
+        display: flex
+        flex-direction: column
+        gap: v.$global_padding_div_2
+
+        span
+          display: flex
+          flex-direction: row
+          justify-content: space-between
+          align-items: center
+          text-transform: uppercase
+          font-size: 1.1rem
+
+          span
+            background: rgba(0, 0, 0, 0.5)
+            padding: v.$global_padding_div_4
+            border-radius: v.$global_padding_div_4
+            font-size: 1rem
+
+        input[type=range]
+          outline: none
+          height: 0.375rem
+          border-radius: v.$global_padding
+          flex: 1 1 auto
+          color: inherit
+          background-color: white
+          background-size: 0 100%
+          background-repeat: no-repeat
+          cursor: pointer
+          appearance: none
+          padding: 0
+          background-image: linear-gradient(v.$primary, v.$primary)
+
+          @include track
+            border: none
+            background: transparent
+            appearance: none
+
+          @include thumb
+            width: 1.25rem
+            height: 1.25rem
+            border: 0
+            background: v.$primary
+            border-radius: 50% 50%
+            appearance: none
+
+    h2
+      font-size: 1.25rem
+      margin: 0 0 1rem
+      font-weight: bold
+      display: flex
+      justify-content: space-between
+      align-items: center
+
+      span
+        cursor: pointer
+        aspect-ratio: 1
+        width: 1.25rem
+        height: 1.25rem
+
+        &::after, &::before
+          content: ""
+          width: 1.25rem
+          height: 3px
+          background: white
+          display: block
+
+        &::before
+          transform: rotate(45deg) translate(6px, 6px)
+
+        &::after
+          transform: rotate(-45deg) translate(-4px, 4px)

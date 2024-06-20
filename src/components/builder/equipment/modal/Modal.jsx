@@ -112,7 +112,7 @@ export function createModal() {
             <div class={`modal`} onMouseDown={handleMouseDown}>
               <div class={`modal-body ${animation() ? 'animation' : ''}`}>
                 <h2>
-                  Choose a {type} <span onClick={closeModal} />
+                  Select a {type} <span onClick={closeModal} />
                 </h2>
                 <div class="filters">
                   <label>
@@ -212,8 +212,8 @@ export function createModal() {
                     </For>
                   </ul>
                 </div>
-                <button></button>
-                <button onClick={closeModal}>close modal</button>
+                <button onClick={closeModal}>Supprimer</button>
+                <button onClick={closeModal}>Sauvegarder</button>
               </div>
             </div>
           </Show>

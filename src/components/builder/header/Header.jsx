@@ -28,7 +28,6 @@ export function Header(props) {
   createEffect(() => {
     const maxPoints = getSkillPoints(levelValue());
     setMaxPoints(maxPoints);
-    setCurrentTotal(0);
   });
 
   return (

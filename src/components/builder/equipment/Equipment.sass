@@ -1,10 +1,12 @@
 @use "sass:map"
 @use '../../../assets/variables' as v
+@import url('https://fonts.googleapis.com/css2?family=Quattrocento:wght@400;700&display=swap')
+$font-family-powder: "Quattrocento", serif
 
 $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$unique_color, rare: v.$rare_color, legendary: v.$legendary_color, fabled: v.$fabled_color, mythic: v.$mythic_color, set: v.$set_color)
 
 @mixin icon-border-color($type)
-  .icon
+  &>.icon
     border-color: map-get($colors, $type)
 
 @mixin input-color($type)
@@ -13,7 +15,7 @@ $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$u
 
 @mixin background-icon($type, $url)
   &.#{$type}
-    .icon
+    &>.icon
       background-image: url($url)
 
 .equipment
@@ -54,8 +56,23 @@ $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$u
       .powder
         width: 3rem
         background: #0a0c0d
-        padding: v.$global_padding_div_4
+        padding: v.$global_padding_div_4 v.$global_padding_div_4 v.$global_padding_div_4 v.$global_padding_div_4
         border-radius: v.$global_padding_div_4
+        font-family: $font-family-powder
+        font-weight: bold
+        line-height: 0.8
+        cursor: pointer
+        user-select: none
+        display: flex
+        justify-content: center
+        align-items: flex-end
+        gap: v.$global_padding_div_4
+
+        &>.icon
+          font-size: 1rem
+
+        span
+          padding-top: 0.2rem
 
   &.weapon, &.relik, &.bow, &.dagger, &.spear, &.wand
     .info
@@ -89,17 +106,16 @@ $colors: (depressing: v.$depressing_color, common: v.$common_color, unique: v.$u
       &:before
         content: 'Lv. '
 
-  .icon
+  &>.icon
     aspect-ratio: 1
     width: 4rem
     border-radius: v.$global_padding_div_4
     background-color: rgba(255, 255, 255, 0.05)
     background-repeat: no-repeat
     background-position: center
-    background-size: calc(5 / 7 * 100%)
+    background-size: calc(7 / 10 * 100%)
     border: 0.25rem solid transparent
     cursor: pointer
-    max-width: 3.5rem
 
   &.depressing
     +icon-border-color(depressing)

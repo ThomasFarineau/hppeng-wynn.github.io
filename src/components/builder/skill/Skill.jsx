@@ -20,6 +20,7 @@ export function Skill(props) {
 
     setValue(initialValue);
     setSelf(initialValue - bonus);
+    setSkillStore('self', id, initialValue - bonus); // Set the initial self value
   });
 
   createEffect(() => {
@@ -38,6 +39,7 @@ export function Skill(props) {
     const mandatory = equipmentStore.mandatorySkillpoints[id];
     const newValue = getValue() < mandatory ? mandatory : getValue();
     setSelf(newValue - bonus);
+    setSkillStore('self', id, newValue - bonus); // Update self value in skillStore
   });
 
   const changeValue = (v) => {
@@ -55,6 +57,7 @@ export function Skill(props) {
       setSelf(newSelf);
       setValue(v);
       setSkillStore('value', id, v);
+      setSkillStore('self', id, newSelf); // Update self value in skillStore
     } else {
       setError(`Total skill points cannot exceed ${skillStore.maxPoints}.`);
     }

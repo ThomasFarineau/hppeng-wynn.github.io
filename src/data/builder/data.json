@@ -132,5 +132,27 @@
     "chestplate",
     "leggings",
     "boots"
-  ]
+  ],
+  "powders": {
+    "earth": {
+      "icon": "✤",
+      "color": "#00AA00"
+    },
+    "thunder": {
+      "icon": "✦",
+      "color": "#FFFF55"
+    },
+    "water": {
+      "icon": "❉",
+      "color": "#00FFFF"
+    },
+    "fire": {
+      "icon": "✹",
+      "color": "#FF5555"
+    },
+    "air": {
+      "icon": "❋",
+      "color": "#FFFFFF"
+    }
+  }
 }

@@ -1,12 +1,16 @@
 import {createEffect, createSignal, For} from 'solid-js';
 import {createModal} from './modal/Modal';
+import {createPowderModal} from './powder-modal/PowderModal';
 import './Equipment.sass';
 import {equipmentStore, storeItem} from '../../../store';
+import {builderData} from '../../../data';
 
 export function Equipment(props) {
   const {type, index} = props;
 
   const {Modal, openModal} = createModal();
+  const {PowderModal, openPowderModal} = createPowderModal();
+
   const [item, setItem] = createSignal(null);
   const [powders, setPowders] = createSignal([]);
   const [level, setLevel] = createSignal(0);
@@ -55,12 +59,22 @@ export function Equipment(props) {
           />
           <div class="powders">
             <For each={powders()}>
-              {(slot, i) => <div class={`powder`}>a</div>}
+              {() => (
+                <div
+                  onClick={(e) => openPowderModal()}
+                  class={`powder`}
+                  style={`color: ${builderData.powders.air.color}`}
+                >
+                  <div class="icon">{builderData.powders.air.icon}</div>
+                  <span>IV</span>
+                </div>
+              )}
             </For>
           </div>
         </div>
       </div>
       <Modal input={input} type={type} setItem={updateItem} />
+      <PowderModal />
     </>
   );
 }

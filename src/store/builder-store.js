@@ -1,6 +1,7 @@
 import {createStore} from 'solid-js/store';
 import _ from 'lodash';
 import {builderData} from '../data';
+import {createEffect} from 'solid-js';
 // Equipment Store
 const [equipmentStore, setEquipmentStore] = createStore({
   items: {
@@ -73,6 +74,13 @@ const [skillStore, setSkillStore] = createStore({
     dexterity: 0,
     defense: 0
   },
+  self: {
+    agility: 0,
+    intelligence: 0,
+    strength: 0,
+    dexterity: 0,
+    defense: 0
+  },
   error: null
 });
 
@@ -88,12 +96,9 @@ export function setCurrentTotal(total) {
   setSkillStore('currentTotal', total);
 }
 
-export function setSkillValue(skill, value) {
-  setSkillStore('value', (prev) => ({...prev, [skill]: value}));
-  setSkillStore('currentTotal', () => {
-    return _.sum(Object.values(skillStore.value));
-  });
-}
+createEffect(() => {
+  setSkillStore('currentTotal', _.sum(Object.values(skillStore.self)));
+});
 
 // Export combined stores
 export {equipmentStore, skillStore, setSkillStore};
