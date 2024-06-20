@@ -106,6 +106,22 @@ export function createModal() {
         search(input.value);
       };
 
+      function deleteItem() {
+        setItem(null);
+        closeModal();
+      }
+
+      function saveItem() {
+        searchItems(type, input.value).then((r) => {
+          if (r.length === 1 && r[0].name === input.value) {
+            setItem(r[0]);
+            closeModal();
+          } else {
+            deleteItem();
+          }
+        });
+      }
+
       return (
         <Portal>
           <Show when={open()}>
@@ -212,8 +228,8 @@ export function createModal() {
                     </For>
                   </ul>
                 </div>
-                <button onClick={closeModal}>Supprimer</button>
-                <button onClick={closeModal}>Sauvegarder</button>
+                <button onClick={saveItem}>Sauvegarder</button>
+                <button onClick={deleteItem}>Supprimer</button>
               </div>
             </div>
           </Show>

@@ -20,12 +20,20 @@ export function Equipment(props) {
 
   const updateItem = (item) => {
     const key = `${type}${index !== -1 ? index : ''}`;
-    setItem(item);
-    storeItem(key, item);
-    setBonus(item.base?.health || item.base?.averageDPS || 0);
-    setLevel(item.requirements?.level || 0);
+    if (item === null) {
+      setItem(null);
+      storeItem(key, null);
+      setBonus(0);
+      setLevel(0);
+      setPowders([]);
+    } else {
+      setItem(item);
+      storeItem(key, item);
+      setBonus(item.base?.health || item.base?.averageDPS || 0);
+      setLevel(item.requirements?.level || 0);
 
-    setPowders(new Array(item.powderSlots).fill(null));
+      setPowders(new Array(item.powderSlots).fill(null));
+    }
   };
 
   createEffect(() => {
