@@ -4,31 +4,31 @@
   "maxPowderSlots": 6,
   "skills": [
     {
-      "icon": "✤",
+      "icon": "earth",
       "title": "Strength",
       "color": "#00AA00",
       "id": "strength"
     },
     {
-      "icon": "✦",
+      "icon": "thunder",
       "title": "Dexterity",
       "color": "#FFFF55",
       "id": "dexterity"
     },
     {
-      "icon": "❉",
+      "icon": "water",
       "title": "Intelligence",
       "color": "#55FFFF",
       "id": "intelligence"
     },
     {
-      "icon": "✹",
+      "icon": "fire",
       "title": "Defense",
       "color": "#FF5555",
       "id": "defence"
     },
     {
-      "icon": "❋",
+      "icon": "air",
       "title": "Agility",
       "color": "#FFFFFF",
       "id": "agility"
@@ -133,26 +133,32 @@
     "leggings",
     "boots"
   ],
+  "icons": {
+    "neutral": "✣",
+    "earth": "✤",
+    "thunder": "✦",
+    "water": "❉",
+    "fire": "✹",
+    "air": "❋"
+  },
   "powders": {
     "earth": {
-      "icon": "✤",
       "color": "#00AA00"
     },
     "thunder": {
-      "icon": "✦",
       "color": "#FFFF55"
     },
     "water": {
-      "icon": "❉",
       "color": "#00FFFF"
     },
     "fire": {
-      "icon": "✹",
       "color": "#FF5555"
     },
     "air": {
-      "icon": "❋",
       "color": "#FFFFFF"
     }
-  }
+  },
+  "powdering": [
+    "helmet", "chestplate", "leggings", "boots", "weapon"
+  ]
 }

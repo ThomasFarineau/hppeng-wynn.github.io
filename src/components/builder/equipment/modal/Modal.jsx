@@ -1,7 +1,7 @@
 import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
 import {searchItems} from '../../../../utils';
-import './Modal.sass';
+import '../Modal.sass';
 import {Entries} from '@solid-primitives/keyed';
 import _ from 'lodash';
 import {builderData, TierEnum} from '../../../../data';
@@ -59,6 +59,7 @@ export function createModal() {
       const [maxLevel, setMaxLevel] = createSignal(builderData.maxLevel);
       const [powderSlots, setPowderSlots] = createSignal(-1);
       const [selectedTiers, setSelectedTiers] = createSignal([]);
+      const [focusedIndex, setFocusedIndex] = createSignal(0);
 
       const search = (v) => {
         searchItems(type, v, {
@@ -122,11 +123,53 @@ export function createModal() {
         });
       }
 
+      const handleKeyDown = (e) => {
+        const itemsCount = items().length;
+        if (itemsCount === 0) return;
+
+        if (e.key === 'ArrowDown' || e.key === 'Tab') {
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const newIndex = (prev + 1) % itemsCount;
+            scrollToItem(newIndex);
+            return newIndex;
+          });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setFocusedIndex((prev) => {
+            const newIndex = (prev - 1 + itemsCount) % itemsCount;
+            scrollToItem(newIndex);
+            return newIndex;
+          });
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          onItemClick(items()[focusedIndex()]);
+        }
+      };
+
+      const scrollToItem = (index) => {
+        const itemElement = ulElement.children[index];
+        if (itemElement) {
+          const padding = 8; // 0.5rem in pixels
+          const ulRect = ulElement.getBoundingClientRect();
+          const itemRect = itemElement.getBoundingClientRect();
+
+          if (itemRect.top < ulRect.top + padding) {
+            ulElement.scrollTop -= ulRect.top - itemRect.top + padding;
+          } else if (itemRect.bottom > ulRect.bottom - padding) {
+            ulElement.scrollTop += itemRect.bottom - ulRect.bottom + padding;
+          }
+        }
+      };
+
       return (
         <Portal>
           <Show when={open()}>
             <div class={`modal`} onMouseDown={handleMouseDown}>
-              <div class={`modal-body ${animation() ? 'animation' : ''}`}>
+              <div
+                class={`modal-body ${animation() ? 'animation' : ''}`}
+                onKeyDown={handleKeyDown}
+              >
                 <h2>
                   Select a {type} <span onClick={closeModal} />
                 </h2>
@@ -219,8 +262,11 @@ export function createModal() {
                     class={isFocused() && items().length > 0 ? '' : 'hidden'}
                   >
                     <For each={items()}>
-                      {(item) => (
-                        <li class={item.tier} onClick={() => onItemClick(item)}>
+                      {(item, index) => (
+                        <li
+                          class={`${item.tier} ${index() === focusedIndex() ? 'focused' : ''}`}
+                          onClick={() => onItemClick(item)}
+                        >
                           <div class={`icon ${item.type}`}></div>
                           {item.name}
                         </li>
@@ -228,8 +274,10 @@ export function createModal() {
                     </For>
                   </ul>
                 </div>
-                <button onClick={saveItem}>Sauvegarder</button>
-                <button onClick={deleteItem}>Supprimer</button>
+                <div class="buttons">
+                  <button onClick={deleteItem}>Delete</button>
+                  <button onClick={saveItem}>Save</button>
+                </div>
               </div>
             </div>
           </Show>

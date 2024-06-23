@@ -1,11 +1,7 @@
 import './Skill.sass';
 import {createEffect, createSignal} from 'solid-js';
-import {
-  equipmentStore,
-  setError,
-  setSkillStore,
-  skillStore
-} from '../../../store';
+import {setError, setSkillStore, skillStore} from '../../../store';
+import {builderData} from '../../../data';
 
 export function Skill(props) {
   const {icon, title, color, id} = props;
@@ -13,14 +9,21 @@ export function Skill(props) {
   const [getSelf, setSelf] = createSignal(0);
   const [hasError, setHasError] = createSignal(false);
 
+  // Dynamic signals for bonus and mandatory, initialized from skillStore
+  const [getBonus, setBonus] = createSignal(skillStore.bonus[id]);
+  const [getMandatory, setMandatory] = createSignal(skillStore.mandatory[id]);
+
   createEffect(() => {
-    const bonus = equipmentStore.bonusSkillpoints[id];
-    const mandatory = equipmentStore.mandatorySkillpoints[id];
-    const initialValue = skillStore.value[id] || mandatory;
+    setBonus(skillStore.bonus[id]);
+    setMandatory(skillStore.mandatory[id]);
+  });
+
+  createEffect(() => {
+    const initialValue = skillStore.value[id] || getMandatory();
 
     setValue(initialValue);
-    setSelf(initialValue - bonus);
-    setSkillStore('self', id, initialValue - bonus); // Set the initial self value
+    setSelf(initialValue - getBonus());
+    setSkillStore('self', id, initialValue - getBonus()); // Set the initial self value
   });
 
   createEffect(() => {
@@ -35,22 +38,19 @@ export function Skill(props) {
   });
 
   createEffect(() => {
-    const bonus = equipmentStore.bonusSkillpoints[id];
-    const mandatory = equipmentStore.mandatorySkillpoints[id];
-    const newValue = getValue() < mandatory ? mandatory : getValue();
-    setSelf(newValue - bonus);
-    setSkillStore('self', id, newValue - bonus); // Update self value in skillStore
+    const newValue = getValue() < getMandatory() ? getMandatory() : getValue();
+    setSelf(newValue - getBonus());
+    setSkillStore('self', id, newValue - getBonus()); // Update self value in skillStore
   });
 
+  // Function to change the value based on user input
   const changeValue = (v) => {
-    const bonus = equipmentStore.bonusSkillpoints[id];
-    const mandatory = equipmentStore.mandatorySkillpoints[id];
     v = parseInt(v);
-    v = isNaN(v) ? mandatory : v;
+    v = isNaN(v) ? getMandatory() : v;
 
-    if (v < mandatory) v = mandatory;
+    if (v < getMandatory()) v = getMandatory();
 
-    const newSelf = v - bonus;
+    const newSelf = v - getBonus();
     const potentialTotal = skillStore.currentTotal - getSelf() + newSelf;
     if (potentialTotal <= skillStore.maxPoints) {
       setError(null);
@@ -65,18 +65,17 @@ export function Skill(props) {
 
   return (
     <div class={`skill ${hasError() ? 'error' : ''}`} style={{color: color}}>
-      <span class={'icon'}>{icon}</span>
+      <span class={'icon'}>{builderData.icons[icon]}</span>
       <h2>{title}</h2>
       <input
         type="number"
         value={getValue()}
-        min={equipmentStore.mandatorySkillpoints[id]}
+        min={getMandatory()}
         onInput={(e) => changeValue(e.target.value)}
         onFocusOut={(e) => (e.target.value = getValue())}
       />
       <p>
-        Assigned: {getSelf()} (+{equipmentStore.bonusSkillpoints[id]}) -
-        {equipmentStore.mandatorySkillpoints[id]}
+        Assigned: {getSelf()} (+{getBonus()}) - {getMandatory()}
       </p>
     </div>
   );

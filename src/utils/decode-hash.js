@@ -1,47 +1,18 @@
 import {Base64, getItemByID} from './';
 import _ from 'lodash';
 import {builderData} from '../data';
-
-/*
-function getItemNameFromID(id) { return idMap.get(id); }
-/*
- * Load necessary data for a specific version.
-
-async function loadVersionData(versionName) {
-    const loadPromises = [
-        load_atree_data(versionName),
-        load_major_id_data(versionName),
-        load_old_version(versionName),
-        load_ings_old_version(versionName),
-        load_tome_old_version(versionName)
-    ];
-    await Promise.all(loadPromises);
-}
-
-async function loadDefaultData(versionName) {
-    const defaultLoadPromises = [
-        load_atree_data(versionName),
-        load_major_id_data(versionName),
-        load_init(),
-        load_ing_init(),
-        load_tome_init()
-    ];
-    await Promise.all(defaultLoadPromises);
-}
-*/
+import {powderingData} from './powdering';
 
 async function parseEquipment(encodedData, versionNumber) {
   let equipmentIds = Array(9).fill(null);
 
   if (versionNumber < 4) {
-    // For version numbers less than 4, decode equipment IDs directly from the encoded data
     equipmentIds = _.map(_.range(9), (i) =>
       Base64.toInt(encodedData.slice(i * 3, i * 3 + 3))
     );
-    encodedData = encodedData.slice(27); // Remove processed part from encoded data
+    encodedData = encodedData.slice(27);
   } else {
     let startIdx = 0;
-    // For version numbers 4 and above, handle different encoding schemes
     equipmentIds = _.map(_.range(9), () => {
       let item;
       if (encodedData.charAt(startIdx) === '-') {
@@ -63,15 +34,17 @@ async function parseEquipment(encodedData, versionNumber) {
   }
 
   // Fetch equipment details asynchronously
-  const equipmentsArray = await Promise.all(
+  let equipmentsArray = await Promise.all(
     _.map(equipmentIds, async (id) => await getItemByID(id))
   );
 
+  //remove all undefined items from the array
+  equipmentsArray = _.filter(equipmentsArray, (item) => item !== undefined);
+
   // Count occurrences of each equipment type
-  const typeCounter = _.countBy(
-    equipmentsArray,
-    (equipment) => equipment.type || equipment.accessoryType
-  );
+  const typeCounter = _.countBy(equipmentsArray, (equipment) => {
+    return equipment.type;
+  });
 
   const equipments = {};
 
@@ -82,7 +55,7 @@ async function parseEquipment(encodedData, versionNumber) {
     let equipment = equipmentsArray[i];
 
     if (equipment) {
-      let type = equipment.type || equipment.accessoryType;
+      let type = equipment.type;
       if (builderData.types.weapon.includes(type)) type = 'weapon';
 
       if (!typeIndex[type]) {
@@ -119,6 +92,34 @@ function parseLevel(encodedData) {
   encodedData = encodedData.slice(2);
 
   return {level, encodedData};
+}
+
+function parsePowdering(encodedData) {
+  let data = encodedData;
+
+  let powdering = {};
+  _.forEach(builderData.powdering, (v) => {
+    let powder = [];
+    let n_blocks = Base64.toInt(data.charAt(0));
+    data = data.slice(1);
+    _.times(n_blocks, () => {
+      let six_powders = Base64.toInt(data.slice(0, 5));
+      _.times(6, () => {
+        if (six_powders !== 0) {
+          powder.push(powderingData().get((six_powders & 0x1f) - 1));
+          six_powders >>>= 5;
+        }
+      });
+      data = data.slice(5);
+    });
+
+    powdering[v] = powder;
+  });
+
+  return {
+    powdering,
+    encodedData: data
+  };
 }
 
 /*
@@ -185,11 +186,13 @@ export async function decodeHash(v, hash) {
   const equipmentResult = await parseEquipment(encodedData, versionNumber);
   const skillPointsResult = parseSkillPoints(equipmentResult.encodedData);
   const levelResult = parseLevel(skillPointsResult.encodedData);
+  const powderingResult = parsePowdering(levelResult.encodedData);
 
   return {
     equipments: equipmentResult.equipments,
     skillPoints: skillPointsResult.skillPoints,
-    level: levelResult.level
+    level: levelResult.level,
+    powdering: powderingResult.powdering
   };
 }
 

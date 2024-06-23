@@ -1,17 +1,15 @@
-import {createSignal, For, onCleanup, onMount, Show} from 'solid-js';
+import {createSignal, onCleanup, onMount, Show} from 'solid-js';
 import {Portal} from 'solid-js/web';
-import {searchItems} from '../../../../utils';
-import './PowderModal.sass';
+import '../Modal.sass';
 import {Entries} from '@solid-primitives/keyed';
-import _ from 'lodash';
-import {builderData, TierEnum} from '../../../../data';
+import {builderData} from '../../../../data';
 
 export function createPowderModal() {
   const [open, setOpen] = createSignal(false);
   const [animation, setAnimation] = createSignal(false);
-  let currentInput;
+  const [selectedPowder, setSelectedPowder] = createSignal(null);
+  const [selectedLevel, setSelectedLevel] = createSignal(1); // [1, 6]
   let ulElement;
-  const [items, setItems] = createSignal([]);
 
   const handleKeydown = (e) => {
     if (e.key === 'Escape') closeModal();
@@ -30,13 +28,15 @@ export function createPowderModal() {
     });
   });
 
-  const openPowderModal = () => {
+  const openPowderModal = (powder) => {
     document.body.style.overflow = 'hidden';
     setOpen(true);
     setAnimation(true);
-    setTimeout(() => {
-      setAnimation(false);
-    }, 0);
+    if (powder) {
+      setSelectedPowder(powder.type);
+      setSelectedLevel(powder.level);
+    }
+    setTimeout(() => setAnimation(false), 0);
   };
 
   const closeModal = () => {
@@ -51,8 +51,6 @@ export function createPowderModal() {
   return {
     openPowderModal,
     PowderModal() {
-      const [selectedTiers] = createSignal([]);
-
       const handleMouseDown = (e) => {
         if (ulElement && ulElement.contains(e.target)) {
           e.preventDefault(); // Prevent blur event
@@ -62,49 +60,42 @@ export function createPowderModal() {
       return (
         <Portal>
           <Show when={open()}>
-            <div class={`modal`} onMouseDown={handleMouseDown}>
+            <div class="modal" onMouseDown={handleMouseDown}>
               <div class={`modal-body ${animation() ? 'animation' : ''}`}>
                 <h2>
                   Select a powder <span onClick={closeModal} />
                 </h2>
                 <div class="powder-select">
                   <label>
-                    <span>Min Level</span>
+                    <span>Powder level</span>
                     <input
                       type="range"
                       min={1}
                       max={6}
-                      value={1}
-                      style={
-                        'background-size: ' +
-                        (Number(0) / (5 - 1)) * 100 +
-                        '% 100%'
-                      }
-                      onInput={(e) => {
-                        console.log(e.target.value);
+                      value={selectedLevel()}
+                      style={{
+                        'background-size': `${((selectedLevel() - 1) / 5) * 100}% 100%`
                       }}
+                      onInput={(e) => setSelectedLevel(Number(e.target.value))}
                     />
                   </label>
-                  <span class={'tags'}>
+                  <span class="tags powders">
                     <Entries of={builderData.powders}>
-                      {(key, v) => {
-                        console.log(v());
-                        return (
-                          <div
-                            class={`tag ${key}`}
-                            style={`background: ${v().color}`}
-                          >
-                            {key}
-                            <span>{v().icon}</span>
-                          </div>
-                        );
-                      }}
+                      {(key, v) => (
+                        <div
+                          class={`tag ${key} ${selectedPowder() === key ? 'selected' : ''}`}
+                          onClick={() => setSelectedPowder(key)}
+                        >
+                          {key}
+                          <span>{builderData.icons[key]}</span>
+                        </div>
+                      )}
                     </Entries>
                   </span>
                 </div>
                 <div class="buttons">
-                  <button>Sauvegarder</button>
-                  <button onClick={closeModal}>Annuler</button>
+                  <button onClick={closeModal}>Cancel</button>
+                  <button>Save</button>
                 </div>
               </div>
             </div>

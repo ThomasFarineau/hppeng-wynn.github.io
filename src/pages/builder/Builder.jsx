@@ -4,8 +4,7 @@ import {createSignal, For} from 'solid-js';
 import {builderData} from '../../data';
 import {decodeHash, processURI} from '../../utils';
 import {Entries} from '@solid-primitives/keyed';
-import {setSkillStore, storeItem} from '../../store';
-import _ from 'lodash';
+import {storeEquipments, storePowdering, storeSkillPoints} from '../../store';
 
 export default function Builder() {
   const getSkillPoints = (level) =>
@@ -29,11 +28,10 @@ export default function Builder() {
   decodeHash(localStorage.getItem('v'), localStorage.getItem('hash')).then(
     (data) => {
       setLevelValue(data.level);
-      _.forEach(data.skillPoints, (value, i) =>
-        setSkillStore('value', builderData.skills[i].id, value)
-      );
 
-      _.forEach(data.equipments, (value, key) => storeItem(key, value));
+      storeSkillPoints(data.skillPoints);
+      storeEquipments(data.equipments);
+      storePowdering(data.powdering);
     }
   );
 

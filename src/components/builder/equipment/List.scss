@@ -1,6 +1,14 @@
-@use '../../../../assets/variables' as v;
+@use '../../../assets/variables' as v;
 
-$modes: (
+$powders: (
+        earth: #00AA00,
+        fire: #FF5555,
+        water: #00FFFF,
+        air: #FFFFFF,
+        thunder: #FFFF55,
+);
+
+$tiers: (
         normal: v.$common_color,
         unique: v.$unique_color,
         rare: v.$rare_color,
@@ -10,7 +18,7 @@ $modes: (
         mythic: v.$mythic_color
 );
 
-$image_url: '../../../../assets/images/equipment/';
+$image_url: '../../../assets/images/equipment/';
 
 $icons: (
         relik: url($image_url + 'weapons/relik.webp'),

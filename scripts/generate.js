@@ -17,11 +17,13 @@ const main = () => {
   try {
     const itemsData = readFileSync(path.join(dataPath, 'items.json'));
     const recipesData = readFileSync(path.join(dataPath, 'recipes.json'));
+    const metadataData = readFileSync(path.join(dataPath, 'metadata.json'));
     const data = readFileSync(path.join(__dirname, 'id_item_mapping.json'));
 
     const items = JSON.parse(itemsData);
     const idItemMapping = JSON.parse(data);
     const recipes = JSON.parse(recipesData);
+    let parsedMetadata = JSON.parse(metadataData);
 
     let resultItems = {};
     let resultRecipes = {};
@@ -33,7 +35,6 @@ const main = () => {
         items[key].internalName = k;
         delete items[key]['armorType'];
         delete items[key]['armorColor'];
-        delete items[key].lore;
         delete items[key]['material'];
         if (items[key]['accessoryType'])
           items[key].type = items[key]['accessoryType'];
@@ -78,15 +79,37 @@ const main = () => {
 
     result['items'] = resultItems;
     result['recipes'] = sortedRecipes;
+    result['metadata'] = parsedMetadata;
 
     writeFileSync(
       path.join(destination, 'output.json'),
       JSON.stringify(result)
+    );
+
+    const identifications = {};
+    _.forEach(
+      parsedMetadata.identifications,
+      (value) => (identifications[value] = transformIdentificationKey(value))
+    );
+
+    writeFileSync(
+      path.join(destination, 'identifications.json'),
+      JSON.stringify(identifications, null, 2)
     );
   } catch (err) {
     console.error(err);
     throw err;
   }
 };
+
+function transformIdentificationKey(key) {
+  if (key.toLowerCase().startsWith('raw')) key = key.slice(3);
+  if (key.toLowerCase().endsWith('raw')) key = key.slice(0, -3);
+
+  return key
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+}
 
 main();
